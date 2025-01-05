@@ -39,7 +39,7 @@ public class Patient {
     public double getBalance() {
         return balance;
     }
-    
+
     public void addBalance(double balance) {
         this.balance = balance;
     }
@@ -67,15 +67,8 @@ public class Patient {
         return null;
     }
 
-    // Method to update private/public status
-    public void setStatus(String status) {
-        if (status.equalsIgnoreCase("Private")) {
-            this.isPrivate = true;
-        } else if (status.equalsIgnoreCase("Public")) {
-            this.isPrivate = false;
-        } else {
-            throw new IllegalArgumentException("Status must be 'Private' or 'Public'.");
-        }
+    public void setStatus(boolean status) {
+        this.isPrivate = status; // Update the isPrivate field
     }
 
     // Override toString to display patient details
@@ -83,6 +76,6 @@ public class Patient {
     public String toString() {
         return "Patient{id: " + id + ", name: " + name
                 + ", balance: " + balance
-                +", currentFacility: " + (currentFacility != null ? currentFacility.getName() : "None") + "}";
+                + ", currentFacility: " + (currentFacility != null ? currentFacility.getName() : "None") + "}";
     }
 }

@@ -175,8 +175,9 @@ public class ProcedureMenu extends BaseMenu {
     private void deleteProcedure() {
         int selectedRow = procedureTable.getSelectedRow();
         if (selectedRow != -1) {
-            procedureManager.getProcedures().remove(selectedRow); // Remove from ProcedureManager
-            procedureTableModel.removeRow(selectedRow);
+            int procedureId = (int) procedureTableModel.getValueAt(selectedRow, 0); // Get the ID of the selected procedure
+            procedureManager.deleteProcedure(procedureId); // Remove from ProcedureManager
+            procedureTableModel.removeRow(selectedRow); // Remove from table model
         } else {
             JOptionPane.showMessageDialog(null, "Please select a procedure to delete.");
         }
@@ -185,27 +186,34 @@ public class ProcedureMenu extends BaseMenu {
     private void editProcedure() {
         int selectedRow = procedureTable.getSelectedRow();
         if (selectedRow != -1) {
-            Procedure selectedProcedure = procedureManager.getProcedures().get(selectedRow);
+            int procedureId = (int) procedureTableModel.getValueAt(selectedRow, 0); // Get the ID of the selected procedure
+            Procedure selectedProcedure = procedureManager.getProcedures().stream()
+                    .filter(proc -> proc.getId() == procedureId)
+                    .findFirst()
+                    .orElse(null);
 
-            String newName = JOptionPane.showInputDialog("Enter new Procedure Name:", selectedProcedure.getName());
-            String newDescription = JOptionPane.showInputDialog("Enter new Description:", selectedProcedure.getDescription());
-            String newType = JOptionPane.showInputDialog("Enter new Procedure Type (Elective/Non-Elective):", selectedProcedure.getIsElective() ? "Elective" : "Non-Elective");
-            boolean newIsElective = newType.equalsIgnoreCase("Elective");
-            String newCostStr = JOptionPane.showInputDialog("Enter new Base Cost:", selectedProcedure.getCost());
+            if (selectedProcedure != null) {
+                String newName = JOptionPane.showInputDialog("Enter new Procedure Name:", selectedProcedure.getName());
+                String newDescription = JOptionPane.showInputDialog("Enter new Description:", selectedProcedure.getDescription());
+                String newType = JOptionPane.showInputDialog("Enter new Procedure Type (Elective/Non-Elective):", selectedProcedure.getIsElective() ? "Elective" : "Non-Elective");
+                boolean newIsElective = newType.equalsIgnoreCase("Elective");
+                String newCostStr = JOptionPane.showInputDialog("Enter new Base Cost:", selectedProcedure.getCost());
 
-            try {
-                double newCost = Double.parseDouble(newCostStr);
-                selectedProcedure.setName(newName);
-                selectedProcedure.setDescription(newDescription);
-                selectedProcedure.setIsElective(newIsElective);
-                selectedProcedure.setCost(newCost);
+                try {
+                    double newCost = Double.parseDouble(newCostStr);
+                    selectedProcedure.setName(newName);
+                    selectedProcedure.setDescription(newDescription);
+                    selectedProcedure.setIsElective(newIsElective);
+                    selectedProcedure.setCost(newCost);
 
-                procedureTableModel.setValueAt(newName, selectedRow, 1);
-                procedureTableModel.setValueAt(newType, selectedRow, 2);
-                procedureTableModel.setValueAt(newDescription, selectedRow, 3);
-                procedureTableModel.setValueAt(newCost, selectedRow, 4);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Invalid input: " + ex.getMessage());
+                    // Update the table model
+                    procedureTableModel.setValueAt(newName, selectedRow, 1);
+                    procedureTableModel.setValueAt(newIsElective ? "Elective" : "Non-Elective", selectedRow, 2);
+                    procedureTableModel.setValueAt(newDescription, selectedRow, 3);
+                    procedureTableModel.setValueAt(newCost, selectedRow, 4);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid input for cost: " + ex.getMessage());
+                }
             }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a procedure to edit.");

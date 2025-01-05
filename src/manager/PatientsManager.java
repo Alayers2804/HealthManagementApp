@@ -70,7 +70,6 @@ public class PatientsManager {
 
                     Patient patient = new Patient(name, isPrivate, balance);
                     patient.setId(id);  // Set the patient ID
-//                    patient.addBalance(balance);  // Set the balance
                     patient.setCurrentFacility(facility);  // Set the associated facility
                     patients.add(patient);
 
@@ -123,7 +122,6 @@ public class PatientsManager {
     public List<Patient> getPatientsByHospital(int hospitalId) {
         List<Patient> hospitalPatients = new ArrayList<>();
         for (Patient patient : patients) {
-
             if (patient.getCurrentFacility() instanceof Hospital) {
                 Hospital hospital = (Hospital) patient.getCurrentFacility();
                 if (hospital.getId() == hospitalId) {
@@ -164,4 +162,9 @@ public class PatientsManager {
         return clinicPatients;
     }
 
+    // New method to delete a patient by ID
+    public void deletePatient(int patientId) {
+        patients.removeIf(patient -> patient.getId() == patientId);
+        savePatients(); // Save the updated list after deletion
+    }
 }

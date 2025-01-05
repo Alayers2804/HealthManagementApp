@@ -8,7 +8,6 @@ import menu.ObjectManagementMenu;
 import object.Hospital;
 import object.Clinic;
 import manager.MedicalFacilitiesManager; // Import the MedicalFacilitiesManager
-import object.MedicalFacility;
 
 public class MedicalFacilitiesMenu extends BaseMenu {
 
@@ -212,8 +211,16 @@ public class MedicalFacilitiesMenu extends BaseMenu {
         int selectedRow = hospitalTable.getSelectedRow();
         if (selectedRow != -1) {
             int id = (int) hospitalTableModel.getValueAt(selectedRow, 0);
-            facilitiesManager.getHospitals().removeIf(h -> h.getId() == id);
-            loadHospitals(); // Refresh the table
+            int confirmation = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete this hospital? This will also delete associated procedures and set current facilities of patients to null.",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirmation == JOptionPane.YES_OPTION) {
+                // Delete associated procedures and set patients' current facility to null
+                facilitiesManager.deleteHospital(id); // Use the delete method from MedicalFacilitiesManager
+                loadHospitals(); // Refresh the table
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a hospital to delete.");
         }
@@ -223,8 +230,16 @@ public class MedicalFacilitiesMenu extends BaseMenu {
         int selectedRow = clinicTable.getSelectedRow();
         if (selectedRow != -1) {
             int id = (int) clinicTableModel.getValueAt(selectedRow, 0);
-            facilitiesManager.getClinics().removeIf(c -> c.getId() == id);
-            loadClinics(); // Refresh the table
+            int confirmation = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete this clinic? This will also delete associated procedures and set current facilities of patients to null.",
+                    "Confirm Deletion",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (confirmation == JOptionPane.YES_OPTION) {
+                // Delete associated procedures and set patients' current facility to null
+                facilitiesManager.deleteClinic(id); // Use the delete method from MedicalFacilitiesManager
+                loadClinics(); // Refresh the table
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a clinic to delete.");
         }
@@ -238,10 +253,24 @@ public class MedicalFacilitiesMenu extends BaseMenu {
             if (hospital != null) {
                 String newName = JOptionPane.showInputDialog("Enter new Hospital Name:", hospital.getName());
                 String newProbStr = JOptionPane.showInputDialog("Enter new Admission Probability (0-1):", hospital.getProbAdmit());
-                double newProbAdmit = Double.parseDouble(newProbStr);
-                hospital.setName(newName);
-                hospital.setProbAdmit(newProbAdmit);
-                loadHospitals(); // Refresh the table
+
+                try {
+                    double newProbAdmit = Double.parseDouble(newProbStr);
+                    if (newProbAdmit < 0 || newProbAdmit > 1) {
+                        throw new NumberFormatException();
+                    }
+
+                    // Update the hospital details
+                    hospital.setName(newName);
+                    hospital.setProbAdmit(newProbAdmit);
+
+                    // Call the update method in MedicalFacilitiesManager
+                    facilitiesManager.updateHospital(hospital); // Assuming you have an updateHospital method in MedicalFacilitiesManager
+
+                    loadHospitals(); // Refresh the table
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number for admission probability between 0 and 1.");
+                }
             }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a hospital to edit.");
@@ -256,17 +285,27 @@ public class MedicalFacilitiesMenu extends BaseMenu {
             if (clinic != null) {
                 String newName = JOptionPane.showInputDialog("Enter new Clinic Name:", clinic.getName());
                 String newFeeStr = JOptionPane.showInputDialog("Enter new Consultation Fee:", clinic.getFee());
-                double newFee = Double.parseDouble(newFeeStr);
                 String newGapStr = JOptionPane.showInputDialog("Enter new Gap Percent:", clinic.getGapPercent());
-                double newGapPercent = Double.parseDouble(newGapStr);
-                clinic.setName(newName);
-                clinic.setFee(newFee);
-                clinic.setGapPercent(newGapPercent);
-                loadClinics(); // Refresh the table
+
+                try {
+                    double newFee = Double.parseDouble(newFeeStr);
+                    double newGapPercent = Double.parseDouble(newGapStr);
+
+                    // Update the clinic details
+                    clinic.setName(newName);
+                    clinic.setFee(newFee);
+                    clinic.setGapPercent(newGapPercent);
+
+                    // Call the update method in MedicalFacilitiesManager
+                    facilitiesManager.updateClinic(clinic); // Assuming you have an updateClinic method in MedicalFacilitiesManager
+
+                    loadClinics(); // Refresh the table
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter valid numbers for fee and gap percent.");
+                }
             }
         } else {
             JOptionPane.showMessageDialog(null, "Please select a clinic to edit.");
         }
     }
-
 }

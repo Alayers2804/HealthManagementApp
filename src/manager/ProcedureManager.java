@@ -29,6 +29,12 @@ public class ProcedureManager {
         saveProcedures();
     }
 
+    // New method to delete a procedure by ID
+    public void deleteProcedure(int procedureId) {
+        procedures.removeIf(procedure -> procedure.getId() == procedureId);
+        saveProcedures(); // Save the updated list after deletion
+    }
+
     private void loadProcedures() {
         try (BufferedReader reader = new BufferedReader(new FileReader("datafile/procedures.txt"))) {
             String line;
@@ -80,5 +86,10 @@ public class ProcedureManager {
 
     public int getMaxId() {
         return maxId;
+    }
+
+    public void deleteProceduresByHospitalId(int hospitalId) {
+        procedures.removeIf(procedure -> procedure.getHospitalId() == hospitalId);
+        saveProcedures(); // Save the updated list
     }
 }

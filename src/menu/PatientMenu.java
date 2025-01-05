@@ -121,8 +121,14 @@ public class PatientMenu extends BaseMenu {
 
     private void addPatient() {
         String name = JOptionPane.showInputDialog("Enter Patient Name:");
-        String status = JOptionPane.showInputDialog("Enter Patient Status (Private/Public):");
-        boolean isPrivate = status.equalsIgnoreCase("Private");
+
+        // Use a choice dialog for status
+        String[] options = {"Private", "Public"};
+        int choice = JOptionPane.showOptionDialog(null, "Select Patient Status:", "Patient Status",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+        boolean isPrivate = (choice == 0); // If "Private" is selected
+
         String balance = JOptionPane.showInputDialog("Enter the Patient Balance");
 
         // Create a new patient and set its hospital to null explicitly
@@ -133,7 +139,7 @@ public class PatientMenu extends BaseMenu {
         patientTableModel.addRow(new Object[]{
             newPatient.getId(),
             name,
-            status,
+            isPrivate ? "Private" : "Public",
             newPatient.getBalance(),
             "None"
         });
@@ -142,8 +148,9 @@ public class PatientMenu extends BaseMenu {
     private void deletePatient() {
         int selectedRow = patientTable.getSelectedRow();
         if (selectedRow != -1) {
-            patientManager.getPatients().remove(selectedRow); // Remove from PatientManager
-            patientTableModel.removeRow(selectedRow);
+            int patientId = (int) patientTableModel.getValueAt(selectedRow, 0); // Get the ID of the selected patient
+            patientManager.deletePatient(patientId); // Remove from PatientManager
+            patientTableModel.removeRow(selectedRow); // Remove from the table model
         } else {
             JOptionPane.showMessageDialog(null, "Please select a patient to delete.");
         }
@@ -155,14 +162,20 @@ public class PatientMenu extends BaseMenu {
             Patient selectedPatient = patientManager.getPatients().get(selectedRow);
 
             String newName = JOptionPane.showInputDialog("Enter new Patient Name:", selectedPatient.getName());
-            String newStatus = JOptionPane.showInputDialog("Enter new Status (Private/Public):", selectedPatient.isPrivate() ? "Private" : "Public");
-            boolean newIsPrivate = newStatus.equalsIgnoreCase("Private");
+
+            // Use a choice dialog for new status
+            String[] options = {"Private", "Public"};
+            int choice = JOptionPane.showOptionDialog(null, "Select new Patient Status:", "Patient Status",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+
+            boolean newIsPrivate = (choice == 0); // If "Private" is selected
 
             selectedPatient.setName(newName);
-            selectedPatient.setStatus(newIsPrivate ? "Private" : "Public");
+            selectedPatient.setStatus(newIsPrivate); // Update the private status
 
+            patientManager.updatePatient(selectedPatient); // Update the patient in the manager
             patientTableModel.setValueAt(newName, selectedRow, 1);
-            patientTableModel.setValueAt(newStatus, selectedRow, 2);
+            patientTableModel.setValueAt(newIsPrivate ? "Private" : "Public", selectedRow, 2);
             patientTableModel.setValueAt(selectedPatient.getBalance(), selectedRow, 3);
             patientTableModel.setValueAt(selectedPatient.getCurrentFacility() != null ? selectedPatient.getCurrentFacility().getName() : "None", selectedRow, 4);
         } else {

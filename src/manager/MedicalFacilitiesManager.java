@@ -6,17 +6,19 @@ import object.Hospital;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import object.Patient;
 
 public class MedicalFacilitiesManager {
 
     private List<Hospital> hospitals;
     private List<Clinic> clinics;
-    private ProcedureManager procedureManager; // Add this line
+    private ProcedureManager procedureManager;
+    private PatientsManager patientsManager;
 
     public MedicalFacilitiesManager() {
         hospitals = new ArrayList<>();
         clinics = new ArrayList<>();
-        procedureManager = new ProcedureManager(); // Initialize ProcedureManager
+        procedureManager = new ProcedureManager();
         loadHospitals();
         loadClinics();
     }
@@ -32,13 +34,60 @@ public class MedicalFacilitiesManager {
     public void addHospital(Hospital hospital) {
         hospitals.add(hospital);
         saveHospitals();
-       
     }
 
     public void addClinic(Clinic clinic) {
         clinics.add(clinic);
         saveClinics();
-        
+    }
+
+    public void deleteHospital(int hospitalId) {
+        // Remove associated procedures
+        procedureManager.deleteProceduresByHospitalId(hospitalId);
+
+        // Set current facility of patients to null if it is the deleted hospital
+        for (Patient patient : patientsManager.getPatients()) {
+            if (patient.getCurrentFacility() instanceof Hospital && patient.getCurrentFacility().getId() == hospitalId) {
+                patient.setCurrentFacility(null); // Set current facility to null
+            }
+        }
+
+        // Now remove the hospital
+        hospitals.removeIf(hospital -> hospital.getId() == hospitalId);
+        saveHospitals();
+    }
+
+    public void deleteClinic(int clinicId) {
+
+        for (Patient patient : patientsManager.getPatients()) {
+            if (patient.getCurrentFacility() instanceof Clinic && patient.getCurrentFacility().getId() == clinicId) {
+                patient.setCurrentFacility(null); // Set current facility to null
+            }
+        }
+
+        // Now remove the clinic
+        clinics.removeIf(clinic -> clinic.getId() == clinicId);
+        saveClinics();
+    }
+
+    public void updateHospital(Hospital updatedHospital) {
+        for (int i = 0; i < hospitals.size(); i++) {
+            if (hospitals.get(i).getId() == updatedHospital.getId()) {
+                hospitals.set(i, updatedHospital); // Update the existing hospital
+                saveHospitals(); // Save the updated list
+                return;
+            }
+        }
+    }
+
+    public void updateClinic(Clinic updatedClinic) {
+        for (int i = 0; i < clinics.size(); i++) {
+            if (clinics.get(i).getId() == updatedClinic.getId()) {
+                clinics.set(i, updatedClinic); // Update the existing clinic
+                saveClinics(); // Save the updated list
+                return;
+            }
+        }
     }
 
     private void loadHospitals() {
@@ -55,7 +104,7 @@ public class MedicalFacilitiesManager {
                     maxId = Math.max(maxId, id);
                 }
             }
-            Hospital.setIdCounter(maxId + 1); // Set the counter for the next hospital
+            Hospital.setIdCounter(maxId + 1);
         } catch (IOException e) {
             System.err.println("Error loading hospitals: " + e.getMessage());
         }
@@ -76,7 +125,7 @@ public class MedicalFacilitiesManager {
                     maxId = Math.max(maxId, id);
                 }
             }
-            Clinic.setIdCounter(maxId + 1); // Set the counter for the next clinic
+            Clinic.setIdCounter(maxId + 1);
         } catch (IOException e) {
             System.err.println("Error loading clinics: " + e.getMessage());
         }
@@ -104,8 +153,7 @@ public class MedicalFacilitiesManager {
         }
     }
 
-    public ProcedureManager getProcedureManager() { // Add this method
+    public ProcedureManager getProcedureManager() {
         return procedureManager;
     }
-    
 }
