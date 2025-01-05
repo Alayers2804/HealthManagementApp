@@ -8,10 +8,10 @@ public class Patient {
     private double balance; // Account balance
     private MedicalFacility currentFacility; // Current medical facility
 
-    public Patient(String name, boolean isPrivate) {
+    public Patient(String name, boolean isPrivate, double balance) {
         this.name = name;
         this.isPrivate = isPrivate;
-        this.balance = 0.0;
+        this.balance = balance;
         this.currentFacility = null; // Default to no facility assigned
     }
 

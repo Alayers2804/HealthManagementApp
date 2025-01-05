@@ -13,7 +13,7 @@ public class PatientsManager {
 
     private List<Patient> patients;
     private int nextPatientId = 1; // Starts from 1 or your preferred starting ID
-    
+
     public PatientsManager() {
         patients = new ArrayList<>();
         loadPatients();
@@ -68,11 +68,14 @@ public class PatientsManager {
                         }
                     }
 
-                    Patient patient = new Patient(name, isPrivate);
+                    Patient patient = new Patient(name, isPrivate, balance);
                     patient.setId(id);  // Set the patient ID
-                    patient.addBalance(balance);  // Set the balance
+//                    patient.addBalance(balance);  // Set the balance
                     patient.setCurrentFacility(facility);  // Set the associated facility
                     patients.add(patient);
+
+                    // Debugging output
+                    System.out.println("Loaded patient: " + patient.getName() + ", Facility: " + (facility != null ? facility.getName() : "None"));
 
                     // Update maxId to track the highest used ID
                     if (id > maxId) {
@@ -91,7 +94,7 @@ public class PatientsManager {
     private void savePatients() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("datafile/patients.txt"))) {
             for (Patient patient : patients) {
-                String facilityDetails = "";
+                String facilityDetails;
                 if (patient.getCurrentFacility() != null) {
                     MedicalFacility facility = patient.getCurrentFacility();
                     facilityDetails = facility.getClass().getSimpleName() + "," + facility.getId() + "," + facility.getName();
@@ -104,6 +107,7 @@ public class PatientsManager {
                         facilityDetails += "," + clinic.getFee() + "," + clinic.getGapPercent();
                     }
                 } else {
+                    // Set facility details to "None,None,None" when currentFacility is null
                     facilityDetails = "None,None,None";
                 }
 
@@ -128,6 +132,36 @@ public class PatientsManager {
             }
         }
         return hospitalPatients;
+    }
+
+    public void updatePatient(Patient patient) {
+        for (int i = 0; i < patients.size(); i++) {
+            if (patients.get(i).getId() == patient.getId()) {
+                patients.set(i, patient); // Update the existing patient
+                savePatients(); // Save the updated list
+                return;
+            }
+        }
+    }
+
+    public List<Patient> getPatientsByClinic(int clinicId) {
+        List<Patient> clinicPatients = new ArrayList<>();
+        System.out.println("Fetching patients for Clinic ID: " + clinicId);
+
+        // Print the list before the loop to confirm it is being processed
+        System.out.println("Initial patients list size: " + patients.size());
+
+        for (Patient patient : patients) {
+            if (patient.getCurrentFacility() instanceof Clinic) {
+                Clinic clinic = (Clinic) patient.getCurrentFacility();
+                System.out.println("Comparing Clinic ID: " + clinic.getId() + " with " + clinicId);
+                if (clinic.getId() == clinicId) {
+                    clinicPatients.add(patient);
+                }
+            }
+        }
+        System.out.println("Filtered patients: " + clinicPatients.size());
+        return clinicPatients;
     }
 
 }

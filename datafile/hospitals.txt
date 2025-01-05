@@ -1,2 +1,1 @@
-1,Test,0.3
-2,Ferdi,0.2
+1,TestHospital,0.5

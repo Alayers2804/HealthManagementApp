@@ -1,1 +1,1 @@
-1,Test,false,0.0,None,None,None
+1,Ferdinand,true,-2000.0,Hospital,1,TestHospital,0.5

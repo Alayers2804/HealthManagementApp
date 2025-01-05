@@ -1,1 +1,1 @@
-Ferdi,Ferdi,true,20.0,2,1
+TestProcedure,Test,true,20.0,1,1

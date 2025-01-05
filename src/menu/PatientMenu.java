@@ -4,6 +4,7 @@ import manager.PatientsManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import static java.lang.Double.parseDouble;
 import main.HelpHealthManagementApp;
 import manager.MedicalFacilitiesManager;
 import object.Patient;
@@ -106,8 +107,15 @@ public class PatientMenu extends BaseMenu {
     }
 
     private void loadPatients() {
+        patientTableModel.setRowCount(0); // Clear existing rows
         for (Patient patient : patientManager.getPatients()) {
-            patientTableModel.addRow(new Object[]{patient.getId(), patient.getName(), patient.isPrivate() ? "Private" : "Public", patient.getBalance(), patient.getCurrentFacility() != null ? patient.getCurrentFacility().getName() : "None"});
+            patientTableModel.addRow(new Object[]{
+                patient.getId(),
+                patient.getName(),
+                patient.isPrivate() ? "Private" : "Public",
+                patient.getBalance(),
+                patient.getCurrentFacility() != null ? patient.getCurrentFacility().getName() : "None"
+            });
         }
     }
 
@@ -115,9 +123,10 @@ public class PatientMenu extends BaseMenu {
         String name = JOptionPane.showInputDialog("Enter Patient Name:");
         String status = JOptionPane.showInputDialog("Enter Patient Status (Private/Public):");
         boolean isPrivate = status.equalsIgnoreCase("Private");
+        String balance = JOptionPane.showInputDialog("Enter the Patient Balance");
 
         // Create a new patient and set its hospital to null explicitly
-        Patient newPatient = new Patient(name, isPrivate);
+        Patient newPatient = new Patient(name, isPrivate, parseDouble(balance));
         newPatient.setId(patientManager.getNextPatientId());  // Set the correct ID
 
         patientManager.addPatient(newPatient);  // Add the patient using PatientManager

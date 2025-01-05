@@ -222,13 +222,65 @@ public class VisitMenu extends BaseMenu {
     }
 
     private void processVisit() {
-        // Logic to process the visit
-        // This could involve updating the patient's current facility, etc.
+        Patient selectedPatient = (Patient) patientComboBox.getSelectedItem();
+        if (selectedPatient == null) {
+            JOptionPane.showMessageDialog(null, "No patient selected.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Check if the patient is already registered at a facility
+        if (selectedPatient.getCurrentFacility() != null) {
+            JOptionPane.showMessageDialog(null,
+                    "Patient is Currently Registered at another facility.\nPlease complete previous visit first!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return; // Exit the method if the patient is already registered
+        }
+
+        if (hospitalComboBox.isVisible()) {
+            Hospital selectedHospital = (Hospital) hospitalComboBox.getSelectedItem();
+            if (selectedHospital != null) {
+                double randomNum = Math.random();
+                double admissionProbability = selectedHospital.getProbAdmit();
+
+                if (randomNum > admissionProbability) {
+                    selectedPatient.setCurrentFacility(selectedHospital);
+                    patientManager.updatePatient(selectedPatient); // Update the existing patient
+                    JOptionPane.showMessageDialog(null,
+                            "Patient Admitted to: " + selectedHospital.getName()
+                            + "\nRandom Number: " + randomNum
+                            + "\nProbability: " + admissionProbability,
+                            "Patient Admitted",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Random Number: " + randomNum
+                            + " and Probability: " + admissionProbability
+                            + "\nPatient Not Admitted",
+                            "Patient Not Admitted",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } else if (clinicComboBox.isVisible()) {
+            Clinic selectedClinic = (Clinic) clinicComboBox.getSelectedItem();
+            if (selectedClinic != null) {
+                if (selectedPatient.getBalance() >= selectedClinic.getFee()) {
+                    selectedPatient.setCurrentFacility(selectedClinic);
+                    patientManager.updatePatient(selectedPatient); // Update the existing patient
+                    JOptionPane.showMessageDialog(null,
+                            "Patient Registered at: " + selectedClinic.getName()
+                            + "\nConsultation available on next visit",
+                            "First Visit Clinic",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Insufficient balance for consultation at " + selectedClinic.getName(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+        updatePatientDetails();
     }
 
-    private void refreshData() {
-        patientComboBox.setModel(new DefaultComboBoxModel<>(patientManager.getPatients().toArray(new Patient[0])));
-        hospitalComboBox.setModel(new DefaultComboBoxModel<>(facilitiesManager.getHospitals().toArray(new Hospital[0])));
-        clinicComboBox.setModel(new DefaultComboBoxModel<>(facilitiesManager.getClinics().toArray(new Clinic[0])));
-    }
 }

@@ -56,6 +56,10 @@ public class Procedure {
     }
 
     public double calculateCost(Patient patient) {
+        if (patient == null) {
+            throw new IllegalArgumentException("Patient cannot be null");
+        }
+
         if (patient.isPrivate()) {
             return isElective ? 2000.0 : 1000.0;
         } else {

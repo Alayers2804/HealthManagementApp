@@ -107,4 +107,5 @@ public class MedicalFacilitiesManager {
     public ProcedureManager getProcedureManager() { // Add this method
         return procedureManager;
     }
+    
 }
