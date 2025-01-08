@@ -1,7 +1,7 @@
 package object;
 
 public class Patient {
-    
+
     public int id; // Patient ID
     private String name; // Patient name
     private boolean isPrivate; // Private or public patient
@@ -73,8 +73,25 @@ public class Patient {
 
     @Override
     public String toString() {
-        return "Patient{id: " + id + ", name: " + name
-                + ", balance: " + balance
-                + ", currentFacility: " + (currentFacility != null ? currentFacility.getName() : "None") + "}";
+        return "id: " + id + ", name: " + name
+                + ", balance: " + balance;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Patient)) {
+            return false;
+        }
+        Patient other = (Patient) obj;
+        return this.id == other.id; // Compare based on ID  
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id); // Use ID for hash code  
+    }
+
 }

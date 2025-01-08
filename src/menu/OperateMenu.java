@@ -349,7 +349,7 @@ public class OperateMenu extends BaseMenu {
         // Validate inputs    
         if (patients == null || patients.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Patients need to be assigned first.", "Error", JOptionPane.ERROR_MESSAGE);
-            return; // Exit the method if there are no patients    
+            return; 
         }
 
         DefaultTableModel model = (DefaultTableModel) procedureTable.getModel();

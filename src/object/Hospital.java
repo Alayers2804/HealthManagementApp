@@ -9,7 +9,6 @@ public class Hospital extends MedicalFacility {
     private static int idCounter = 1; // Static counter for Hospital IDs
     private double probAdmit;
     private List<Procedure> procedures;
-    private double lastRandNum;
 
     // Constructor with ID for loading from files
     public Hospital(int id, String name, double probAdmit) {
@@ -56,7 +55,6 @@ public class Hospital extends MedicalFacility {
 
     @Override
     public String toString() {
-        return "Hospital {" + super.toString() + ", ProbAdmit: " + probAdmit
-                + ", Procedures: " + procedures.size() + "}";
+        return super.toString() + ", ProbAdmit: " + probAdmit;
     }
 }

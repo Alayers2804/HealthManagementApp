@@ -208,5 +208,5 @@ public class PatientMenu extends BaseMenu {
         } else {  
             JOptionPane.showMessageDialog(null, "Please select a patient to edit.");  
         }  
-    }  
+    }
 }  

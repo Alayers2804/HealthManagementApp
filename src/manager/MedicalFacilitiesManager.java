@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import object.Patient;
+import object.Procedure;
 
 public class MedicalFacilitiesManager {
 
@@ -158,4 +159,21 @@ public class MedicalFacilitiesManager {
     public ProcedureManager getProcedureManager() {
         return procedureManager;
     }
+
+    public void addProcedureToHospital(int hospitalId, Procedure procedure) {
+        Hospital hospital = getHospitalById(hospitalId);
+        if (hospital != null) {
+            hospital.addProcedure(procedure);
+        }
+    }
+
+    private Hospital getHospitalById(int hospitalId) {
+        for (Hospital hospital : hospitals) {
+            if (hospital.getId() == hospitalId) {
+                return hospital;
+            }
+        }
+        return null; 
+    }
+
 }

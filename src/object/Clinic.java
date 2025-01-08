@@ -51,6 +51,6 @@ public class Clinic extends MedicalFacility {
 
     @Override
     public String toString() {
-        return "Clinic {" + super.toString() + ", Fee: " + fee + ", Gap Percent: " + gapPercent + "}";
+        return super.toString() + ", Fee: " + fee + ", Gap Percent: " + gapPercent;
     }
 }

@@ -92,4 +92,5 @@ public class ProcedureManager {
         procedures.removeIf(procedure -> procedure.getHospitalId() == hospitalId);
         saveProcedures(); // Save the updated list      
     }
+    
 }

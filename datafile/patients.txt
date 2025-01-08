@@ -1,2 +1,7 @@
-1,Thifal,false,8.0,None,None,None
+1,Thifal,false,2.0,Clinic,1,Klinik Ferdi,20.0,30.0
 2,Ferdinand,true,2880.0,Clinic,1,Klinik Ferdi,20.0,30.0
+3,Testing,false,500.0,None,None,None
+4,Yugi,true,7000.0,None,None,None
+5,Unyil ,true,9000.0,None,None,None
+6,Bobo,true,900000.0,Hospital,1,Test Hospita,0.3
+7,Ajeng,false,5994.0,None,None,None
