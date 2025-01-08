@@ -50,21 +50,6 @@ public class Clinic extends MedicalFacility {
     }
 
     @Override
-    public boolean visit(Patient pat) {
-        if (pat.getCurrentFacility() != this) {
-            pat.setCurrentFacility(this);
-            return false;
-        }
-
-        double consultationCost = pat.isPrivate()
-                ? fee
-                : fee * (gapPercent / 100.0);
-
-        pat.addBalance(consultationCost);
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "Clinic {" + super.toString() + ", Fee: " + fee + ", Gap Percent: " + gapPercent + "}";
     }

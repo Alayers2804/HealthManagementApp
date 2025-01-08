@@ -9,7 +9,7 @@ import java.util.List;
 public class ProcedureManager {
 
     private List<Procedure> procedures;
-    private int maxId;  // Variable to track the highest ID
+    private int maxId;  // Variable to track the highest ID      
 
     public ProcedureManager() {
         procedures = new ArrayList<>();
@@ -21,18 +21,17 @@ public class ProcedureManager {
     }
 
     public void addProcedure(Procedure procedure) {
-        // Ensure the procedure's ID is the highest, only if it's a new procedure
-        if (procedure.getId() > maxId) {
-            maxId = procedure.getId();  // Update maxId if the new procedure has a higher ID
-        }
+        // Assign a new ID to the procedure      
+        procedure.setId(maxId + 1);
+        maxId++; // Increment maxId for the next procedure      
         procedures.add(procedure);
         saveProcedures();
     }
 
-    // New method to delete a procedure by ID
+    // New method to delete a procedure by ID      
     public void deleteProcedure(int procedureId) {
         procedures.removeIf(procedure -> procedure.getId() == procedureId);
-        saveProcedures(); // Save the updated list after deletion
+        saveProcedures(); // Save the updated list after deletion      
     }
 
     private void loadProcedures() {
@@ -40,21 +39,22 @@ public class ProcedureManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 6) { // Ensure there are enough parts
-                    String name = parts[0];
-                    String description = parts[1];
-                    boolean isElective = Boolean.parseBoolean(parts[2]);
-                    double cost = Double.parseDouble(parts[3]);
-                    int hospitalId = Integer.parseInt(parts[4]);
-                    int id = Integer.parseInt(parts[5]);  // Assuming ID is saved in the file
-                    procedures.add(new Procedure(name, description, isElective, cost, hospitalId, id));
+                if (parts.length >= 6) { // Ensure there are enough parts      
+                    int id = Integer.parseInt(parts[0]);  // Read ID first    
+                    String name = parts[1];
+                    String description = parts[2];
+                    boolean isElective = Boolean.parseBoolean(parts[3]);
+                    double cost = Double.parseDouble(parts[4]);
+                    int hospitalId = Integer.parseInt(parts[5]);
 
-                    // Track maxId to avoid unnecessary increments
+                    procedures.add(new Procedure(id, name, description, isElective, cost, hospitalId));
+
+                    // Track maxId to avoid unnecessary increments      
                     if (id > maxId) {
                         maxId = id;
                     }
                 } else {
-                    System.err.println("Invalid procedure data: " + line); // Log invalid lines
+                    System.err.println("Invalid procedure data: " + line); // Log invalid lines      
                 }
             }
         } catch (IOException e) {
@@ -65,8 +65,8 @@ public class ProcedureManager {
     private void saveProcedures() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("datafile/procedures.txt"))) {
             for (Procedure procedure : procedures) {
-                writer.write(procedure.getName() + "," + procedure.getDescription() + "," + procedure.getIsElective()
-                        + "," + procedure.getCost() + "," + procedure.getHospitalId() + "," + procedure.getId());
+                writer.write(procedure.getId() + "," + procedure.getName() + "," + procedure.getDescription() + ","
+                        + procedure.getIsElective() + "," + procedure.getCost() + "," + procedure.getHospitalId());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -90,6 +90,6 @@ public class ProcedureManager {
 
     public void deleteProceduresByHospitalId(int hospitalId) {
         procedures.removeIf(procedure -> procedure.getHospitalId() == hospitalId);
-        saveProcedures(); // Save the updated list
+        saveProcedures(); // Save the updated list      
     }
 }

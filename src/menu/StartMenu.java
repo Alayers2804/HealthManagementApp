@@ -4,11 +4,11 @@ import frame.FrameGUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import main.HelpHealthManagementApp;
+import main.MedicalGUI;
 
 public class StartMenu extends BaseMenu {
 
-    public StartMenu(HelpHealthManagementApp app) {
+    public StartMenu(MedicalGUI app) {
         super(app);
     }
 

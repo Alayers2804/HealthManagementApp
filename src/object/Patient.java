@@ -1,7 +1,7 @@
 package object;
 
 public class Patient {
-
+    
     public int id; // Patient ID
     private String name; // Patient name
     private boolean isPrivate; // Private or public patient
@@ -71,7 +71,6 @@ public class Patient {
         this.isPrivate = status; // Update the isPrivate field
     }
 
-    // Override toString to display patient details
     @Override
     public String toString() {
         return "Patient{id: " + id + ", name: " + name

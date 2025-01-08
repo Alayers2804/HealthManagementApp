@@ -3,7 +3,7 @@ package menu;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import main.HelpHealthManagementApp;
+import main.MedicalGUI;
 import manager.MedicalFacilitiesManager;
 import manager.PatientsManager;
 import manager.ProcedureManager;
@@ -35,7 +35,7 @@ public class VisitMenu extends BaseMenu {
     private MedicalFacilitiesManager facilitiesManager;
     private ProcedureManager procedureManager;
 
-    public VisitMenu(HelpHealthManagementApp app) {
+    public VisitMenu(MedicalGUI app) {
         super(app);
         facilitiesManager = new MedicalFacilitiesManager();
         patientManager = new PatientsManager();
@@ -169,13 +169,37 @@ public class VisitMenu extends BaseMenu {
     }
 
     private void updatePatientDetails() {
+        // Get the selected patient from the combo box  
         Patient selectedPatient = (Patient) patientComboBox.getSelectedItem();
         if (selectedPatient != null) {
+            // Update the text fields with the selected patient's details  
             idField.setText(String.valueOf(selectedPatient.getId()));
             nameField.setText(selectedPatient.getName());
             statusField.setText(selectedPatient.isPrivate() ? "Private" : "Public");
             balanceField.setText(String.valueOf(selectedPatient.getBalance()));
             currentFacilityField.setText(selectedPatient.getCurrentFacility() != null ? selectedPatient.getCurrentFacility().getName() : "None");
+        }
+
+        // Refresh the patient combo box to ensure it reflects any updates  
+        refreshPatientComboBox();
+    }
+
+    private void refreshPatientComboBox() {
+        // Get the updated list of patients  
+        List<Patient> updatedPatients = patientManager.getPatients();
+
+        // Clear the existing items in the combo box  
+        patientComboBox.removeAllItems();
+
+        // Add the updated patients to the combo box  
+        for (Patient patient : updatedPatients) {
+            patientComboBox.addItem(patient);
+        }
+
+        // Re-select the previously selected patient if it still exists  
+        Patient selectedPatient = (Patient) patientComboBox.getSelectedItem();
+        if (selectedPatient != null) {
+            patientComboBox.setSelectedItem(selectedPatient);
         }
     }
 
@@ -228,15 +252,7 @@ public class VisitMenu extends BaseMenu {
             return;
         }
 
-        // Check if the patient is already registered at a facility
-        if (selectedPatient.getCurrentFacility() != null) {
-            JOptionPane.showMessageDialog(null,
-                    "Patient is Currently Registered at another facility.\nPlease complete previous visit first!",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return; // Exit the method if the patient is already registered
-        }
-
+        // Check if the patient is already registered at a facility    
         if (hospitalComboBox.isVisible()) {
             Hospital selectedHospital = (Hospital) hospitalComboBox.getSelectedItem();
             if (selectedHospital != null) {
@@ -245,7 +261,7 @@ public class VisitMenu extends BaseMenu {
 
                 if (randomNum > admissionProbability) {
                     selectedPatient.setCurrentFacility(selectedHospital);
-                    patientManager.updatePatient(selectedPatient); // Update the existing patient
+                    patientManager.updatePatient(selectedPatient); // Update the existing patient    
                     JOptionPane.showMessageDialog(null,
                             "Patient Admitted to: " + selectedHospital.getName()
                             + "\nRandom Number: " + randomNum
@@ -264,20 +280,59 @@ public class VisitMenu extends BaseMenu {
         } else if (clinicComboBox.isVisible()) {
             Clinic selectedClinic = (Clinic) clinicComboBox.getSelectedItem();
             if (selectedClinic != null) {
-                if (selectedPatient.getBalance() >= selectedClinic.getFee()) {
+                // Check if the selected clinic is the same as the current facility    
+                if (selectedPatient.getCurrentFacility() != null
+                        && !selectedPatient.getCurrentFacility().getName().equals(selectedClinic.getName())) {
+                    JOptionPane.showMessageDialog(null,
+                            "Patient is currently registered at another facility.\nPlease complete the previous visit first!",
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method if the patient is registered at a different facility    
+                }
+
+                // If the patient is visiting for the first time (current facility is null)  
+                if (selectedPatient.getCurrentFacility() == null) {
                     selectedPatient.setCurrentFacility(selectedClinic);
-                    patientManager.updatePatient(selectedPatient); // Update the existing patient
+                    patientManager.updatePatient(selectedPatient); // Update the existing patient    
                     JOptionPane.showMessageDialog(null,
                             "Patient Registered at: " + selectedClinic.getName()
-                            + "\nConsultation available on next visit",
+                            + "\nConsultation available on next visit.",
                             "First Visit Clinic",
                             JOptionPane.INFORMATION_MESSAGE);
+                    updatePatientDetails();
+                    return; // Exit after showing the message  
+                }
+
+                // Calculate the consultation fee based on patient status    
+                double consultationFee;
+                if (selectedPatient.isPrivate()) {
+                    consultationFee = selectedClinic.getFee(); // Fee is the same for private patients    
                 } else {
+                    consultationFee = selectedClinic.getFee() * (selectedClinic.getGapPercent() / 100.0); // Fee for public patients    
+                }
+
+                // Update the patient's balance    
+                double newBalance = selectedPatient.getBalance() - consultationFee;
+                if (newBalance < 0) {
                     JOptionPane.showMessageDialog(null,
                             "Insufficient balance for consultation at " + selectedClinic.getName(),
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
+                    return; // Exit if the balance is insufficient    
                 }
+
+                // Set the current facility to null    
+                selectedPatient.setCurrentFacility(null);
+                selectedPatient.addBalance(newBalance);
+                patientManager.updatePatient(selectedPatient); // Update the existing patient    
+
+                // Show the consultation cost and new balance    
+                JOptionPane.showMessageDialog(null,
+                        "Consultation at: " + selectedClinic.getName()
+                        + "\nConsultation Fee: " + consultationFee
+                        + "\nNew Balance: " + newBalance,
+                        "Consultation Complete",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         }
         updatePatientDetails();

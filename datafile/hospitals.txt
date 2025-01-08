@@ -1,1 +1,2 @@
-1,TestHospital,0.5
+1,Test Hospita,0.3
+2,Ferdinand,0.2

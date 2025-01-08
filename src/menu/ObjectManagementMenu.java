@@ -3,7 +3,7 @@ package menu;
 import frame.FrameGUI;
 import manager.MedicalFacilitiesManager;
 import manager.PatientsManager;
-import main.HelpHealthManagementApp;
+import main.MedicalGUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ public class ObjectManagementMenu extends BaseMenu {
     private PatientsManager patientsManager;
     private MedicalFacilitiesManager facilitiesManager;
 
-    public ObjectManagementMenu(HelpHealthManagementApp app) {
+    public ObjectManagementMenu(MedicalGUI app) {
         super(app);
         facilitiesManager = new MedicalFacilitiesManager(); // Initialize the MedicalFacilitiesManager
         patientsManager = new PatientsManager(); // Initialize the PatientsManager

@@ -7,14 +7,14 @@ import manager.PatientsManager;
 import manager.ProcedureManager;
 import menu.StartMenu;
 
-public class HelpHealthManagementApp {
+public class MedicalGUI {
 
     private FrameGUI gui;
     private PatientsManager patientManager;
     private MedicalFacilitiesManager facilitiesManager;
     private ProcedureManager procedureManager;
 
-    public HelpHealthManagementApp() {
+    public MedicalGUI() {
         gui = new FrameGUI();
         facilitiesManager = new MedicalFacilitiesManager();
         patientManager = new PatientsManager();
@@ -23,7 +23,7 @@ public class HelpHealthManagementApp {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            HelpHealthManagementApp app = new HelpHealthManagementApp();
+            MedicalGUI app = new MedicalGUI();
             app.showStartMenu();
         });
     }

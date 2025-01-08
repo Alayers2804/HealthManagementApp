@@ -5,11 +5,11 @@ import frame.FrameGUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import main.HelpHealthManagementApp;
+import main.MedicalGUI;
 
 public class TransactionMenu extends BaseMenu {
 
-    public TransactionMenu(HelpHealthManagementApp app) {
+    public TransactionMenu(MedicalGUI app) {
         super(app);
     }
 
@@ -60,8 +60,8 @@ public class TransactionMenu extends BaseMenu {
         setupButton(centerPanel, visitButton, e -> new VisitMenu(app).display());
         centerPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Spacing between buttons
 
-        JButton procedureButton = new JButton("Procedure");
-        setupButton(centerPanel, procedureButton, e -> new ProcedureOperationMenu(app).display());
+        JButton procedureButton = new JButton("Operate");
+        setupButton(centerPanel, procedureButton, e -> new OperateMenu(app).display());
         centerPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Spacing between buttons
 
         JButton backButton = new JButton("Back");

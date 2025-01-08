@@ -2,49 +2,38 @@ package object;
 
 public class Procedure {
 
-    static int idCounter = 1;
     private int id;
     private String name;
     private String description;
     private boolean isElective;
     private double cost;
-    private int hospitalId; // Associate with a hospital
+    private int hospitalId; // Associate with a hospital    
 
-    // Constructor when loading from file
-    public Procedure(String name, String description, boolean isElective, double cost, int hospitalId, int id) {
-        this.id = id; // Use the ID from the file
+    // Constructor when loading from file    
+    public Procedure(int id, String name, String description, boolean isElective, double cost, int hospitalId) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.isElective = isElective;
         this.cost = cost;
         this.hospitalId = hospitalId;
-
-        if (id >= idCounter) {
-            idCounter = id + 1;  // Update idCounter only if the loaded ID is higher than the current counter
-        }
     }
 
-    // Constructor when adding a new procedure
-// Constructor for new procedures
+    // Constructor for new procedures    
     public Procedure(String name, String description, boolean isElective, double cost, int hospitalId) {
-        this.id = idCounter++;
         this.name = name;
         this.description = description;
         this.isElective = isElective;
         this.cost = cost;
         this.hospitalId = hospitalId;
-    }
-
-    public static int getIdCounter() {
-        return idCounter; // Method to get the current ID counter
-    }
-
-    public static void setIdCounter(int idCounter) {
-        Procedure.idCounter = idCounter; // Method to set the static counter
     }
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id; // Method to set the ID    
     }
 
     public int getHospitalId() {

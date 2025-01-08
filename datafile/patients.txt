@@ -1,1 +1,2 @@
-1,Ferdinand,true,-2000.0,Hospital,1,TestHospital,0.5
+1,Thifal,false,8.0,None,None,None
+2,Ferdinand,true,2880.0,Clinic,1,Klinik Ferdi,20.0,30.0

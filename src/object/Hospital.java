@@ -55,18 +55,6 @@ public class Hospital extends MedicalFacility {
     }
 
     @Override
-    public boolean visit(Patient pat) {
-        Random rand = new Random();
-        lastRandNum = rand.nextDouble();
-
-        if (lastRandNum <= probAdmit) {
-            pat.setCurrentFacility(this);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public String toString() {
         return "Hospital {" + super.toString() + ", ProbAdmit: " + probAdmit
                 + ", Procedures: " + procedures.size() + "}";

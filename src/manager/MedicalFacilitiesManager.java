@@ -19,6 +19,7 @@ public class MedicalFacilitiesManager {
         hospitals = new ArrayList<>();
         clinics = new ArrayList<>();
         procedureManager = new ProcedureManager();
+        patientsManager = new PatientsManager();
         loadHospitals();
         loadClinics();
     }
@@ -49,6 +50,7 @@ public class MedicalFacilitiesManager {
         for (Patient patient : patientsManager.getPatients()) {
             if (patient.getCurrentFacility() instanceof Hospital && patient.getCurrentFacility().getId() == hospitalId) {
                 patient.setCurrentFacility(null); // Set current facility to null
+                patientsManager.updatePatient(patient);
             }
         }
 
@@ -62,10 +64,10 @@ public class MedicalFacilitiesManager {
         for (Patient patient : patientsManager.getPatients()) {
             if (patient.getCurrentFacility() instanceof Clinic && patient.getCurrentFacility().getId() == clinicId) {
                 patient.setCurrentFacility(null); // Set current facility to null
+                patientsManager.updatePatient(patient);
             }
         }
 
-        // Now remove the clinic
         clinics.removeIf(clinic -> clinic.getId() == clinicId);
         saveClinics();
     }

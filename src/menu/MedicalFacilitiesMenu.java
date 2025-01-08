@@ -3,8 +3,10 @@ package menu;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import main.HelpHealthManagementApp;
+import java.util.Comparator;
+import main.MedicalGUI;
 import menu.ObjectManagementMenu;
+import java.util.List;
 import object.Hospital;
 import object.Clinic;
 import manager.MedicalFacilitiesManager; // Import the MedicalFacilitiesManager
@@ -18,7 +20,7 @@ public class MedicalFacilitiesMenu extends BaseMenu {
     private JTable clinicTable;
     private DefaultTableModel clinicTableModel;
 
-    public MedicalFacilitiesMenu(HelpHealthManagementApp app) {
+    public MedicalFacilitiesMenu(MedicalGUI app) {
         super(app);
         facilitiesManager = new MedicalFacilitiesManager(); // Initialize the MedicalFacilitiesManager
     }
@@ -52,6 +54,9 @@ public class MedicalFacilitiesMenu extends BaseMenu {
         hospitalTable = new JTable(hospitalTableModel);
         JScrollPane scrollPane = new JScrollPane(hospitalTable);
 
+        // Add action listener for sorting  
+        sortComboBox.addActionListener(e -> sortHospitals(sortComboBox.getSelectedItem().toString()));
+
         JButton addButton = new JButton("Add Hospital");
         addButton.addActionListener(e -> addHospital());
         JButton deleteButton = new JButton("Delete Hospital");
@@ -61,7 +66,7 @@ public class MedicalFacilitiesMenu extends BaseMenu {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> new ObjectManagementMenu(app).display());
 
-        // Set GroupLayout properties
+        // Set GroupLayout properties  
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -113,6 +118,9 @@ public class MedicalFacilitiesMenu extends BaseMenu {
         clinicTable = new JTable(clinicTableModel);
         JScrollPane scrollPane = new JScrollPane(clinicTable);
 
+        // Add action listener for sorting  
+        sortComboBox.addActionListener(e -> sortClinics(sortComboBox.getSelectedItem().toString()));
+
         JButton addButton = new JButton("Add Clinic");
         addButton.addActionListener(e -> addClinic());
         JButton deleteButton = new JButton("Delete Clinic");
@@ -122,7 +130,7 @@ public class MedicalFacilitiesMenu extends BaseMenu {
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> new ObjectManagementMenu(app).display());
 
-        // Set GroupLayout properties
+        // Set GroupLayout properties  
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
@@ -194,14 +202,14 @@ public class MedicalFacilitiesMenu extends BaseMenu {
     }
 
     private void loadHospitals() {
-        hospitalTableModel.setRowCount(0); // Clear existing rows
+        hospitalTableModel.setRowCount(0); // Clear existing rows  
         for (Hospital hospital : facilitiesManager.getHospitals()) {
             hospitalTableModel.addRow(new Object[]{hospital.getId(), hospital.getName(), hospital.getProbAdmit()});
         }
     }
 
     private void loadClinics() {
-        clinicTableModel.setRowCount(0); // Clear existing rows
+        clinicTableModel.setRowCount(0); // Clear existing rows  
         for (Clinic clinic : facilitiesManager.getClinics()) {
             clinicTableModel.addRow(new Object[]{clinic.getId(), clinic.getName(), clinic.getFee(), clinic.getGapPercent()});
         }
@@ -236,7 +244,6 @@ public class MedicalFacilitiesMenu extends BaseMenu {
                     JOptionPane.YES_NO_OPTION);
 
             if (confirmation == JOptionPane.YES_OPTION) {
-                // Delete associated procedures and set patients' current facility to null
                 facilitiesManager.deleteClinic(id); // Use the delete method from MedicalFacilitiesManager
                 loadClinics(); // Refresh the table
             }
@@ -308,4 +315,43 @@ public class MedicalFacilitiesMenu extends BaseMenu {
             JOptionPane.showMessageDialog(null, "Please select a clinic to edit.");
         }
     }
+
+    private void sortHospitals(String criteria) {
+        List<Hospital> hospitals = facilitiesManager.getHospitals();
+        switch (criteria) {
+            case "Name (A-Z)":
+                hospitals.sort(Comparator.comparing(Hospital::getName));
+                break;
+            case "Name (Z-A)":
+                hospitals.sort(Comparator.comparing(Hospital::getName).reversed());
+                break;
+            case "ID (Ascending)":
+                hospitals.sort(Comparator.comparingInt(Hospital::getId));
+                break;
+            case "ID (Descending)":
+                hospitals.sort(Comparator.comparingInt(Hospital::getId).reversed());
+                break;
+        }
+        loadHospitals(); // Refresh the table after sorting  
+    }
+
+    private void sortClinics(String criteria) {
+        List<Clinic> clinics = facilitiesManager.getClinics();
+        switch (criteria) {
+            case "Name (A-Z)":
+                clinics.sort(Comparator.comparing(Clinic::getName));
+                break;
+            case "Name (Z-A)":
+                clinics.sort(Comparator.comparing(Clinic::getName).reversed());
+                break;
+            case "ID (Ascending)":
+                clinics.sort(Comparator.comparingInt(Clinic::getId));
+                break;
+            case "ID (Descending)":
+                clinics.sort(Comparator.comparingInt(Clinic::getId).reversed());
+                break;
+        }
+        loadClinics(); // Refresh the table after sorting  
+    }
+
 }

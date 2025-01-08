@@ -12,7 +12,7 @@ import object.MedicalFacility;
 public class PatientsManager {
 
     private List<Patient> patients;
-    private int nextPatientId = 1; // Starts from 1 or your preferred starting ID
+    private int nextPatientId; // Will be set based on existing data  
 
     public PatientsManager() {
         patients = new ArrayList<>();
@@ -24,7 +24,9 @@ public class PatientsManager {
     }
 
     public void addPatient(Patient patient) {
+        patient.setId(nextPatientId); // Set the ID before adding  
         patients.add(patient);
+        nextPatientId++; // Increment the ID for the next patient  
         savePatients();
     }
 
@@ -33,27 +35,27 @@ public class PatientsManager {
     }
 
     private void loadPatients() {
-        int maxId = 0; // Track the highest ID
+        int maxId = 0; // Track the highest ID  
         try (BufferedReader reader = new BufferedReader(new FileReader("datafile/patients.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 6) {  // At least 5 fields (ID, Name, Private/Public, Balance, Facility)
+                if (parts.length >= 6) {  // At least 5 fields (ID, Name, Private/Public, Balance, Facility)  
                     int id = Integer.parseInt(parts[0]);
                     String name = parts[1];
                     boolean isPrivate = Boolean.parseBoolean(parts[2]);
                     double balance = Double.parseDouble(parts[3]);
-                    String facilityType = parts[4];  // e.g., Hospital, Clinic, or None
+                    String facilityType = parts[4];  // e.g., Hospital, Clinic, or None  
 
                     MedicalFacility facility = null;
 
-                    // If facilityType is not "None", parse the facility details
+                    // If facilityType is not "None", parse the facility details  
                     if (!facilityType.equals("None")) {
                         try {
                             int facilityId = Integer.parseInt(parts[5]);
                             String facilityName = parts[6];
 
-                            // Create the appropriate MedicalFacility object based on the type
+                            // Create the appropriate MedicalFacility object based on the type  
                             if (facilityType.equals("Hospital")) {
                                 double probAdmit = Double.parseDouble(parts[7]);
                                 facility = new Hospital(facilityId, facilityName, probAdmit);
@@ -63,20 +65,20 @@ public class PatientsManager {
                                 facility = new Clinic(facilityId, facilityName, fee, gapPercent);
                             }
                         } catch (NumberFormatException e) {
-                            // If facilityId is "None", the try block will throw a NumberFormatException.
-                            // In that case, we skip parsing facility details and set facility to null
+                            // If facilityId is "None", the try block will throw a NumberFormatException.  
+                            // In that case, we skip parsing facility details and set facility to null  
                         }
                     }
 
                     Patient patient = new Patient(name, isPrivate, balance);
-                    patient.setId(id);  // Set the patient ID
-                    patient.setCurrentFacility(facility);  // Set the associated facility
+                    patient.setId(id);  // Set the patient ID  
+                    patient.setCurrentFacility(facility);  // Set the associated facility  
                     patients.add(patient);
 
-                    // Debugging output
+                    // Debugging output  
                     System.out.println("Loaded patient: " + patient.getName() + ", Facility: " + (facility != null ? facility.getName() : "None"));
 
-                    // Update maxId to track the highest used ID
+                    // Update maxId to track the highest used ID  
                     if (id > maxId) {
                         maxId = id;
                     }
@@ -85,9 +87,7 @@ public class PatientsManager {
         } catch (IOException | NumberFormatException e) {
             System.err.println("Error loading patients: " + e.getMessage());
         }
-
-        // Ensure the next patient added gets a unique ID
-        nextPatientId = maxId + 1;
+        nextPatientId = maxId + 1; // Set the next ID to be one more than the highest ID found  
     }
 
     private void savePatients() {
@@ -100,17 +100,17 @@ public class PatientsManager {
 
                     if (facility instanceof Hospital) {
                         Hospital hospital = (Hospital) facility;
-                        facilityDetails += "," + hospital.getProbAdmit();  // Include the probability of admission
+                        facilityDetails += "," + hospital.getProbAdmit();  // Include the probability of admission  
                     } else if (facility instanceof Clinic) {
                         Clinic clinic = (Clinic) facility;
                         facilityDetails += "," + clinic.getFee() + "," + clinic.getGapPercent();
                     }
                 } else {
-                    // Set facility details to "None,None,None" when currentFacility is null
+                    // Set facility details to "None,None,None" when currentFacility is null  
                     facilityDetails = "None,None,None";
                 }
 
-                // Write patient details along with the facility information
+                // Write patient details along with the facility information  
                 writer.write(patient.getId() + "," + patient.getName() + "," + patient.isPrivate() + "," + patient.getBalance() + "," + facilityDetails);
                 writer.newLine();
             }

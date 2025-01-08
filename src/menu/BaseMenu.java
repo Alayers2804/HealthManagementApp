@@ -4,13 +4,13 @@ import frame.FrameGUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import main.HelpHealthManagementApp;
+import main.MedicalGUI;
 
 public abstract class BaseMenu {
 
-    protected HelpHealthManagementApp app;
+    protected MedicalGUI app;
 
-    public BaseMenu(HelpHealthManagementApp app) {
+    public BaseMenu(MedicalGUI app) {
         this.app = app;
     }
 
