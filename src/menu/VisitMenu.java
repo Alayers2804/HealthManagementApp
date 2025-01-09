@@ -230,31 +230,30 @@ public class VisitMenu extends BaseMenu {
             return;
         }
 
-        // Check if the patient is already registered at a sfacility    
+        // Check if the patient is already registered at a facility    
         if (hospitalComboBox.isVisible()) {
-            facilityNameLabel.setText("Hospital Name:");
-            admissionProbabilityLabel.setText("Admission Probability:");
-            availableProceduresLabel.setText("Available Procedures:");
-
             Hospital selectedHospital = (Hospital) hospitalComboBox.getSelectedItem();
             if (selectedHospital != null) {
-                // Use MedicalFacilitiesManager to retrieve hospital details  
-                facilityIdField.setText(String.valueOf(selectedHospital.getId()));
-                facilityNameField.setText(selectedHospital.getName());
-                admissionProbabilityField.setText(String.valueOf(selectedHospital.getProbAdmit()));
+                double randomNum = Math.random();
+                double admissionProbability = selectedHospital.getProbAdmit();
 
-                // Retrieve procedures for the selected hospital  
-                List<Procedure> procedures = facilitiesManager.getProcedureManager().getProceduresByHospitalId(selectedHospital.getId());
-                // Create a string to display procedure names  
-                StringBuilder procedureNames = new StringBuilder();
-                for (Procedure procedure : procedures) {
-                    procedureNames.append(procedure.getName()).append(", ");
+                if (randomNum > admissionProbability) {
+                    selectedPatient.setCurrentFacility(selectedHospital);
+                    patientManager.updatePatient(selectedPatient); // Update the existing patient    
+                    JOptionPane.showMessageDialog(null,
+                            "Patient Admitted to: " + selectedHospital.getName()
+                            + "\nRandom Number: " + randomNum
+                            + "\nProbability: " + admissionProbability,
+                            "Patient Admitted",
+                            JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Random Number: " + randomNum
+                            + " and Probability: " + admissionProbability
+                            + "\nPatient Not Admitted",
+                            "Patient Not Admitted",
+                            JOptionPane.ERROR_MESSAGE);
                 }
-                // Remove the last comma and space if there are any procedures  
-                if (procedureNames.length() > 0) {
-                    procedureNames.setLength(procedureNames.length() - 2); // Remove last comma and space  
-                }
-                availableProceduresField.setText(procedureNames.toString()); // Display names and count  
             }
         } else if (clinicComboBox.isVisible()) {
             Clinic selectedClinic = (Clinic) clinicComboBox.getSelectedItem();
